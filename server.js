@@ -22,8 +22,8 @@ connectDB()
 const application = express()
 
 // ===== Body Parser ===== //
-application.use(express.json({ limit: "50m" }))
-application.use(express.urlencoded({ extended: true, limit: "50m" }))
+application.use(express.json({ limit: "50mb" }))
+application.use(express.urlencoded({ extended: true, limit: "50mb" }))
 
 // ===== Cookie Parser ===== //
 application.use(cookieParser())
@@ -50,6 +50,14 @@ application.use(hpp())
 
 // ===== Set Static Folder ===== //
 application.use(express.static(path.join(__dirname, "public")))
+
+
+// ===== Route Files ===== //
+const authentication_routes = require("./routers/authentication_routes")
+
+// ===== Mount Routers =====//
+application.use("/api/v1/authentication", authentication_routes)
+
 
 // ===== Application Error Hanlder ===== //
 application.use(errorHanlder)

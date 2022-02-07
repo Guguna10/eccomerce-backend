@@ -70,7 +70,7 @@ UserSchema.pre("save", async function(next) {
     if(!this.isModified("password")) {
         next()
     }
-    const salt = await bcrypt.getSalt(10)
+    const salt = await bcrypt.genSalt(10)
 
     console.log(this.password, "THIS USER PASSWORD")
     console.log(salt, "THIS USER SALT")
@@ -104,6 +104,25 @@ UserSchema.methods.getResetPasswordToken = function () {
 
     this.resetPasswordToken = reset_token
     this.resetPasswordTokenExpire = Date.now() + 3600000
+
+    console.log(Date.now() + 3600000, "RESET PASS EXPIRE DATE")
     return reset_token
 }
+
+// ====== Generate Confirm Email Token ======//
+UserSchema.methods.generateConfigEmailToken = function() {
+    const confirmation_token = crypto
+        .randomBytes(20)
+        .toString("hex")
+        .substring(1, 5)
+        .toUpperCase()
+        
+        console.log(confirmation_token, "confiramtion_token")
+
+    this.confirmEmailToken= confirmation_token
+    this.confirmEmailTokenExpire = Date.now() + 3600000
+
+    console.log(Date.now() + 3600000, "confirmEmailTokenExpire")
+}
+
 module.exports = mongoose.model("User", UserSchema)
