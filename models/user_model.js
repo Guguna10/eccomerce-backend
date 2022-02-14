@@ -118,7 +118,7 @@ UserSchema.methods.generateConfigEmailToken = function() {
     this.confirmEmailToken= confirmation_token
     this.confirmEmailTokenExpire = Date.now() + 3600000
 
-    console.log(Date.now() + 3600000, "confirmEmailTokenExpire")
+    return confirmation_token
 }
 
 module.exports = mongoose.model("User", UserSchema)

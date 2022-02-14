@@ -51,6 +51,7 @@ application.use(hpp())
 // ===== Set Static Folder ===== //
 application.use(express.static(path.join(__dirname, "public")))
 
+
 // ===== Route Files ===== //
 const authentication_routes = require("./routers/authentication_routes")
 
