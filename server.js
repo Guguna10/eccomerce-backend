@@ -51,7 +51,6 @@ application.use(hpp())
 // ===== Set Static Folder ===== //
 application.use(express.static(path.join(__dirname, "public")))
 
-
 // ===== Route Files ===== //
 const authentication_routes = require("./routers/authentication_routes")
 
@@ -77,5 +76,5 @@ process.on("unhandledRejection", (error, promise) => {
     console.log(chalk.red(`Error: ${error.message}`))
 
     // ===== Close Server & Exit Process ===== //
-    server.close(() => process.exit(1))
+    // server.close(() => process.exit(1))
 })

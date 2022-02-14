@@ -15,6 +15,7 @@ const UserSchema = new mongoose.Schema({
     },
     phone: {
         type: Number,
+        required: [true, "Please enter Mobile phone"],
         unique: true,
     },
     confirmPhoneToken: String,
@@ -71,11 +72,6 @@ UserSchema.pre("save", async function(next) {
         next()
     }
     const salt = await bcrypt.genSalt(10)
-
-    console.log(this.password, "THIS USER PASSWORD")
-    console.log(salt, "THIS USER SALT")
-    const TT = await bcrypt.hash(this.password, salt)
-    console.log(TT, "FINISH RESULT")
 
     this.password = await bcrypt.hash(this.password, salt)
 })
