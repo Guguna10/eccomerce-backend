@@ -106,3 +106,46 @@ exports.login = async(req, res, next) => {
     
     sendTokenResponse(user, 200, res)
 }
+
+// @desc    Confirm Email
+// @route   PUT /api/v1/authentication/confirm_email/:email_token
+// @access  Public
+exports.confirmEmail = async(req, res, next) => {
+    const user =await User.findOne(
+        {
+            confirmEmailToken: req.params.email_token,
+            isEmailConfirmed: false,
+            confirmEmailTokenExpire: { $gt: Date.now() }
+        }
+    )
+
+    if(!user) {
+        return next(
+            new ErrorResponse("Invalid email token", 400)
+        )
+    }
+
+    try {
+        user.confirmEmailToken = undefined
+        user.confirmEmailTokenExpire = undefined
+        user.isEmailConfirmed = true
+
+        await user.save({ validateBeforeSave: false})
+
+        const message = `გილოცავთ ${user.first_name}, თქვენ წარმატებით გაიარეთ რეგისტრაცია და ახლა უკვე შეგიძლიათ იშოპიგნოთ ჩვენს ონლაინ მაღაზიაში`
+
+        await sendEmail(
+            {
+                email: user.email,
+                subject: "წარმატებული რეგისტრაცია",
+                message: message
+            }
+        )
+
+        sendTokenResponse(user, 200, res)
+    } catch (error) {
+        return next(
+            new ErrorResponse("An error occured wihle verifying the user email", 400)
+        )
+    }
+}
