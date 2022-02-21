@@ -1,6 +1,7 @@
 const ErrorResponse = require("../utils/error_response")
 const User = require("../models/user_model")
 const sendTokenResponse = require("../middlewares/send_token_response")
+const { sendEmail } = require('../utils/send_emails')
 
 // @desc    Register user
 // @route   POST /api/v1/authentication/register
@@ -11,17 +12,22 @@ exports.register = async(req, res, next) => {
     const email_candidate = await User.findOne({ email: email })
     const phone_candidate = await User.findOne({ phone: phone })
 
-    if(email_candidate ) {
+
+    if(email_candidate) {
         return next(
-            new ErrorResponse("The user has already registered with this email", 400)
+            new ErrorResponse("user already registered with this email", 400)
         )
     }
 
-    if(phone_candidate ) {
+    console.log("we find it successfully with email")
+
+    if(phone_candidate) {
         return next(
-            new ErrorResponse("The user has already registered with this email", 400)
+            new ErrorResponse("user already registered with this phone", 400)
         )
     }
+
+    console.log("we find it successfully wih phone")
 
     try {
         const new_user = await User
@@ -35,14 +41,34 @@ exports.register = async(req, res, next) => {
             }
         )
 
-        const confirm_email_token = await new_user.generateConfigEmailToken()
-            
+        const confrim_email_token = await new_user.generateConfirmEmailToken()
+
+        const message = `
+            მოგესალმებით ${new_user.first_name}, ${new_user.last_name}, თქვენი კომფორტისთვის და 
+            რეგისტრაციის დასასრულებლად გიგზავნით ელ-ფოსტის ვერიფიკაციის 4 
+            ნიშნა კოდს რომლის ვადაა 1 საათი  ${confrim_email_token},
+            ეს მესიჯი არის დემეტრე ღუღუნიშვილისგან <3
+        `
+
+        await sendEmail(
+            {
+                email: new_user.email,
+                subject: "რეგისტრაცია ელ-ფოსტის ვერიფიკაცია",
+                message: message
+            }
+        )
+
+        await new_user.save({ validateBeforeSave: false })
+
         sendTokenResponse(new_user, 200, res)
-    } catch (error) {
+    } catch(err) {
+        console.log(err, 'This is err')
         return next(
-            new ErrorResponse("The error occured while creating new user in database", 400)
+            new ErrorResponse("the error occurred while creating the user", 400)
         )
     }
+
+    console.log('user registered succesfully')
 }
 
 // @desc    Login user

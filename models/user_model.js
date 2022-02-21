@@ -106,7 +106,7 @@ UserSchema.methods.getResetPasswordToken = function () {
 }
 
 // ====== Generate Confirm Email Token ======//
-UserSchema.methods.generateConfigEmailToken = function() {
+UserSchema.methods.generateConfirmEmailToken = function() {
     const confirmation_token = crypto
         .randomBytes(20)
         .toString("hex")
