@@ -19,15 +19,11 @@ exports.register = async(req, res, next) => {
         )
     }
 
-    console.log("we find it successfully with email")
-
     if(phone_candidate) {
         return next(
             new ErrorResponse("user already registered with this phone", 400)
         )
     }
-
-    console.log("we find it successfully wih phone")
 
     try {
         const new_user = await User
@@ -102,7 +98,6 @@ exports.login = async(req, res, next) => {
             new ErrorResponse("Please enter a valid password", 400)
         )
     }
-    console.log("ok")
     
     sendTokenResponse(user, 200, res)
 }
@@ -148,4 +143,19 @@ exports.confirmEmail = async(req, res, next) => {
             new ErrorResponse("An error occured wihle verifying the user email", 400)
         )
     }
+}
+
+// @desc    Get Current logged User information
+// @route   GET /api/v1/authentication/me
+// @access  Private
+exports.getMe = async(req, res, next) => {
+    const user = await User.findById(req.user.id)
+
+    if(!user) {
+        return next(
+            new ErrorResponse(`User not found with id of ${req.user.id}`, 404)
+        )
+    }
+
+    res.status(200).json({ success: true, user: user })
 }
