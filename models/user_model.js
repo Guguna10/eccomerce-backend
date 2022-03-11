@@ -113,12 +113,23 @@ UserSchema.methods.generateConfirmEmailToken = function() {
         .substring(1, 5)
         .toUpperCase()
         
-        console.log(confirmation_token, "confiramtion_token")
-
-    this.confirmEmailToken= confirmation_token
+    this.confirmEmailToken = confirmation_token
     this.confirmEmailTokenExpire = Date.now() + 3600000
 
     return confirmation_token
 }
 
+// ====== Generate Confirm Email Token ======//
+UserSchema.methods.generateConfirmPhoneToken = function() {
+    const confirmation_token = crypto
+        .randomBytes(20)
+        .toString("hex")
+        .substring(1, 5)
+        .toUpperCase()
+        
+    this.confirmPhoneToken= confirmation_token
+    this.confirmPhoneTokenExpire = Date.now() + 3600000
+
+    return confirmation_token
+}
 module.exports = mongoose.model("User", UserSchema)

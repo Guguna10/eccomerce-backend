@@ -9,7 +9,10 @@ const {
     updateDetails,
     updateUserProfileImage,
     updatePassword,
-    sendConfirmEmailToken
+    sendConfirmEmailToken,
+    forgotPassword,
+    resetPassword,
+    sendPhoneConfirmToken
 } = require('../controllers/authentication')
 const { protect } = require("../middlewares/authentication")
 
@@ -23,5 +26,8 @@ router.put("/update_details", protect, updateDetails)
 router.put("/confirm_email/:email_token", confirmEmail)
 router.put("/confirm_email_token", sendConfirmEmailToken)
 router.put("/update_password", protect, updatePassword)
+router.put("/forgotPassword", forgotPassword)
+router.put("/resetPassowrd/:reset_password_code", resetPassword)
+router.put("/sendPhoneConfirmToken", protect, sendPhoneConfirmToken)
 
 module.exports = router

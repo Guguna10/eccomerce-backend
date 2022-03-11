@@ -2,6 +2,7 @@ const ErrorResponse = require("../utils/error_response")
 const User = require("../models/user_model")
 const sendTokenResponse = require("../middlewares/send_token_response")
 const { sendEmail } = require('../utils/send_emails')
+const Vonage = require("@vonage/server-sdk")
 const cloudinary = require("../utils/cloudinary")
 
 // @desc    Register user
@@ -74,6 +75,7 @@ exports.sendConfirmEmailToken = async(req, res, next) => {
     const user = await User.findOne({email: req.body.email, isEmailConfirmed: false})
 
     if(!user) {
+        console.log(user)
         return next(
             new ErrorResponse(`User not found with email of ${req.body.email.toLowerCase()}`, 404)
         )
@@ -336,13 +338,13 @@ exports.forgotPassword = async(req, res, next) => {
 
     if (user.authorized === 'FACEBOOK') {
         return next(
-            new ErrorResponse("You are logged in with facebook, so you can not cahnge your password", 400)
+            new ErrorResponse("You are logged in with facebook, so you can not change your password", 400)
         )
     }
 
     if (user.authorized === "GOOGLE") {
         return next(
-            new ErrorResponse("You are logged in with google, so you can not cahnge your password", 400)
+            new ErrorResponse("You are logged in with google, so you can not change your password", 400)
         )
     }
 
@@ -365,7 +367,7 @@ exports.forgotPassword = async(req, res, next) => {
             }
         )
 
-        response.status(200).json(
+        res.status(200).json(
             {
                 success: true,
                 message: "A six-digit password reqcovery code is sent to your email adress "
@@ -381,6 +383,109 @@ exports.forgotPassword = async(req, res, next) => {
                 validateBeforeSave: false
             }
         )
+
+        return next(
+            new ErrorResponse("Sorry for the thechnical glitch, the service is temporarily down, we are working on this issue", 500)
+        )
+    }
+}
+
+// @desc    Reset Password
+// @route   PUT /api/v1/authentication/reset_password/:reset_password_code
+// @access  Public
+exports.resetPassword = async(req, res, next) => {
+   const user = await User.findOne(
+       {
+           email: req.body.email.toLowerCase(),
+           resetPasswordToken: req.params.reset_password_code,
+           resetPasswordTokenExpire: { $gt: Date.now() }
+       }
+   )
+
+   if(!user) {
+       return next(
+           new ErrorResponse("Your unique code has expired", 404)
+       )
+   }
+
+   try{
+        // ===== Set NEw Password ===== //
+        user.password = req.body.new_password
+        user.resetPasswordToken = undefined
+        user.resetPasswordTokenExpire = undefined
+
+        await user.save(
+            {
+                validateBeforeSave: false
+            }
+        )
+
+        const message = `მოგესალმებით ${user.first_name}, თქვენი პაროლი წარმატებით შეიცვალა, სასიამოვნო დღეს გისურვებთ`
+
+        await sendEmail(
+            {
+                email: user.email,
+                subject: "პაროლის ცვლილება",
+                message: message
+            }
+        )
+        res.status(200).json({ success: true})
+    }catch (error){
+       return next(
+           new ErrorResponse("An error occurred while resting the user password", 400)
+       )
+   }
+}
+
+// @desc    Send Phone Confirm Token
+// @route   PUT /api/v1/authentication/sendPhoneConfirmToken
+// @access  Private
+exports.sendPhoneConfirmToken = async(req, res, next) => {
+    const user = await User.findById(req.user.id)
+
+    if (!user) {
+        return next(
+            new ErrorResponse(`User not found with id of: ${req.user.id}`, 404)
+        )
+    }
+
+    try {
+        const confirm_phone_token = await user.generateConfirmPhoneToken()
+
+        await user.save({ validateBeforeSave: false })
+
+        const vonage = await new Vonage({
+            apiKey: process.env.VONAGE_KEY,
+            apiSecret: process.env.VONAGE_SECRET
+        })
+
+        const message = `მოგესალმებით ${user.first_name}, გიგზავნით ტელეფონის ვერიფიკაციის კოდს ECOMMERCE-BACKEND - დან: < ${confirm_phone_token} >`
+
+        vonage.message.sendSms("ECOMMERCE BACKEND", `995${user.phone}`, message, (error, response_data) => {
+            if (error) {
+                return next(
+                    new ErrorResponse('An error occurred while sending SMS with VONAGE API', 400)
+                )
+            } else {
+                if(response_data.messages[0]['status'] === "0") {
+                    res.status(200).json(
+                        {
+                            success: true,
+                            message: 'A four-digit phone verification code is sent to your phone address'
+                        }
+                    )
+                } else {
+                    return next(
+                        new ErrorResponse(`Message failed with error: ${response_data.messages[0]['error-text']}`, 400)
+                    )
+                }
+            }
+        })
+    }catch (error) {
+        console.log(error)
+        user.confirmPhoneToken = undefined
+        user.confirmPhoneTokenExpire = undefined
+        await user.save({ validateBeforeSave: false })
 
         return next(
             new ErrorResponse("Sorry for the thechnical glitch, the service is temporarily down, we are working on this issue", 500)
