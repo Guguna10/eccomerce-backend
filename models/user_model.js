@@ -15,6 +15,7 @@ const UserSchema = new mongoose.Schema({
     },
     phone: {
         type: Number,
+        required: [true, "Please enter Mobile phone"],
         unique: true,
     },
     confirmPhoneToken: String,
@@ -72,11 +73,6 @@ UserSchema.pre("save", async function(next) {
     }
     const salt = await bcrypt.genSalt(10)
 
-    console.log(this.password, "THIS USER PASSWORD")
-    console.log(salt, "THIS USER SALT")
-    const TT = await bcrypt.hash(this.password, salt)
-    console.log(TT, "FINISH RESULT")
-
     this.password = await bcrypt.hash(this.password, salt)
 })
 
@@ -110,19 +106,30 @@ UserSchema.methods.getResetPasswordToken = function () {
 }
 
 // ====== Generate Confirm Email Token ======//
-UserSchema.methods.generateConfigEmailToken = function() {
+UserSchema.methods.generateConfirmEmailToken = function() {
     const confirmation_token = crypto
         .randomBytes(20)
         .toString("hex")
         .substring(1, 5)
         .toUpperCase()
         
-        console.log(confirmation_token, "confiramtion_token")
-
-    this.confirmEmailToken= confirmation_token
+    this.confirmEmailToken = confirmation_token
     this.confirmEmailTokenExpire = Date.now() + 3600000
 
-    console.log(Date.now() + 3600000, "confirmEmailTokenExpire")
+    return confirmation_token
 }
 
+// ====== Generate Confirm Phone Token ======//
+UserSchema.methods.generateConfirmPhoneToken = function() {
+    const confirmation_token = crypto
+        .randomBytes(20)
+        .toString("hex")
+        .substring(1, 5)
+        .toUpperCase()
+        
+    this.confirmPhoneToken= confirmation_token
+    this.confirmPhoneTokenExpire = Date.now() + 3600000
+
+    return confirmation_token
+}
 module.exports = mongoose.model("User", UserSchema)
