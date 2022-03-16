@@ -44,8 +44,7 @@ exports.register = async(req, res, next) => {
         const message = `
             მოგესალმებით ${new_user.first_name}, ${new_user.last_name}, თქვენი კომფორტისთვის და 
             რეგისტრაციის დასასრულებლად გიგზავნით ელ-ფოსტის ვერიფიკაციის 4 
-            ნიშნა კოდს რომლის ვადაა 1 საათი  ${confrim_email_token},
-            ეს მესიჯი არის დემეტრე ღუღუნიშვილისგან <3
+            ნიშნა კოდს რომლის ვადაა 1 საათი  ${confrim_email_token}
         `
 
         await sendEmail(
@@ -118,7 +117,7 @@ exports.login = async(req, res, next) => {
             new ErrorResponse("Please enter both email and password", 400)
         )
     }
-    
+
     // ====== Check user in Mongo with email ====== //
     const user = await User.findOne({ email: email}).select("+password")
 
@@ -128,12 +127,19 @@ exports.login = async(req, res, next) => {
         )
     }
 
-    // ====== Chec If password matches ====== //
+    // ====== Check If password matches ====== //
     const isMatch = await user.matchPassword(password)
 
     if (!isMatch) {
         return next(
             new ErrorResponse("Please enter a valid password", 400)
+        )
+    }
+
+    // ====== if account is disabled =====//
+    if(user.disabled === true) {
+        return next(
+            new ErrorResponse("this account is disabled so you cant login", 400)
         )
     }
     
@@ -489,6 +495,49 @@ exports.sendPhoneConfirmToken = async(req, res, next) => {
 
         return next(
             new ErrorResponse("Sorry for the thechnical glitch, the service is temporarily down, we are working on this issue", 500)
+        )
+    }
+}
+
+// @desc    Confirm phone
+// @route   PUT /api/v1/authentication/confirm_phone/:phone_token
+// @access  Private
+exports.confirmPhone = async(req, res, next) => {
+    const user =await User.findOne(
+        {
+            confirmPhoneToken: req.params.phone_token,
+            isPhoneConfirmed: false,
+            confirmPhoneTokenExpire: { $gt: Date.now() }
+        }
+    )
+
+    if(!user) {
+        return next(
+            new ErrorResponse("Invalid phone token", 400)
+        )
+    }
+
+    try {
+        user.confirmPhoneToken = undefined
+        user.confirmPhoneTokenExpire = undefined
+        user.isPhoneConfirmed = true
+
+        await user.save({ validateBeforeSave: false})
+
+        const message = `გილოცავთ ${user.first_name}, თქვენ წარმატებით გაიარეთ ტელეფონის ვერიფიკაცია`
+
+        await sendEmail(
+            {
+                email: user.email,
+                subject: "წარმატებული რეგისტრაცია",
+                message: message
+            }
+        )
+
+        sendTokenResponse(user, 200, res)
+    } catch (error) {
+        return next(
+            new ErrorResponse("An error occured wihle verifying the user email", 400)
         )
     }
 }

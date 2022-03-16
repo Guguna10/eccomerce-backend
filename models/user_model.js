@@ -119,7 +119,7 @@ UserSchema.methods.generateConfirmEmailToken = function() {
     return confirmation_token
 }
 
-// ====== Generate Confirm Email Token ======//
+// ====== Generate Confirm Phone Token ======//
 UserSchema.methods.generateConfirmPhoneToken = function() {
     const confirmation_token = crypto
         .randomBytes(20)

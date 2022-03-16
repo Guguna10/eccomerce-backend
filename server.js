@@ -54,9 +54,11 @@ application.use(express.static(path.join(__dirname, "public")))
 
 // ===== Route Files ===== //
 const authentication_routes = require("./routers/authentication_routes")
+const users_routes = require("./routers/users_routes")
 
 // ===== Mount Routers =====//
 application.use("/api/v1/authentication", authentication_routes)
+application.use("/api/v1/users", users_routes)
 
 
 // ===== Application Error Hanlder ===== //
