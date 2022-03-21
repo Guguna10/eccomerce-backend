@@ -2,6 +2,7 @@ const ErrorResponse = require("../utils/error_response")
 
  // ===== Close Server & Exit Process ===== //
 const errorHandler = (err, req, res, next) => {
+    
     let error = { ...err }
 
     error.message = err.message

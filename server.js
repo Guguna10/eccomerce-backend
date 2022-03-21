@@ -55,10 +55,14 @@ application.use(express.static(path.join(__dirname, "public")))
 // ===== Route Files ===== //
 const authentication_routes = require("./routers/authentication_routes")
 const users_routes = require("./routers/users_routes")
+const products_routes = require("./routers/products_routes")
+const brands_routes = require("./routers/brands_routes")
 
 // ===== Mount Routers =====//
 application.use("/api/v1/authentication", authentication_routes)
 application.use("/api/v1/users", users_routes)
+application.use("/api/v1/products", products_routes)
+application.use("/api/v1/brands", brands_routes)
 
 
 // ===== Application Error Hanlder ===== //
@@ -77,7 +81,7 @@ application.listen(PORT, (request, response) => {
 // ===== Handle Unhandled Promise Rejections ===== //
 process.on("unhandledRejection", (error, promise) => {
     console.log(chalk.red(`Error: ${error.message}`))
-
+    
     // ===== Close Server & Exit Process ===== //
     // server.close(() => process.exit(1))
 })

@@ -11,5 +11,4 @@ const connectDB = async () => {
 
     console.log(chalk.underline.bold.cyan(`Mongo Connected: ${connect.connection.host}`))
 }
-
 module.exports = connectDB

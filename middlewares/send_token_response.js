@@ -21,5 +21,6 @@ const sendTokenReponse = async(user, statusCode, res) => {
             token: generated_token
         })
 }
-
+        
+        
 module.exports = sendTokenReponse

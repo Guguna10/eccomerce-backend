@@ -14,7 +14,6 @@ exports.register = async(req, res, next) => {
     const email_candidate = await User.findOne({ email: email.toLowerCase() })
     const phone_candidate = await User.findOne({ phone: phone })
 
-
     if(email_candidate) {
         return next(
             new ErrorResponse("user already registered with this email", 400)
@@ -209,7 +208,7 @@ exports.getMe = async(req, res, next) => {
 // @access  Private
 exports.updateDetails = async(req, res, next) => {
     const user = await User.findById(req.user.id)
-
+    
     if(!user) {
         return next(
             new ErrorResponse(`User not found with id of: ${req.user.id}`, 404)
@@ -510,6 +509,7 @@ exports.confirmPhone = async(req, res, next) => {
             confirmPhoneTokenExpire: { $gt: Date.now() }
         }
     )
+    
 
     if(!user) {
         return next(
