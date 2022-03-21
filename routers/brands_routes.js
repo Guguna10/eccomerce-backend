@@ -4,12 +4,20 @@ const { protect, authorize } = require('../middlewares/authentication')
 
 const {
     getBrands,
+    getBrand,
     createBrand,
-    updateBrand
+    updateBrand,
+    deleteBrand
 } = require("../controllers/brands_controller")
 
-router.get("/get_brands", getBrands)
-router.post("/create_brand", protect, authorize("OPERATOR", "ADMIN"), createBrand)
-router.put("/update_brand", protect, authorize("OPERATOR", "ADMIN"), updateBrand)
+router
+    .route("/")
+    .get(getBrands)
+    .post(protect, authorize("ADMIN", "OPERATOR"), createBrand)
+router
+    .route("/:brand_id")
+    .get(protect, authorize("ADMIN", "OPERATOR"), getBrand)
+    .put(protect, authorize("ADMIN", "OPERATOR"), updateBrand)  
+    .delete(protect, authorize("ADMIN", "OPERATOR"), deleteBrand)
 
 module.exports = router

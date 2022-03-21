@@ -88,7 +88,7 @@ const ProductModel = new mongoose.Schema({
     },
     youtube_url: String,
     author: {
-        type: mongoose.Schema.Types.ObjectId,
+        type:  String,
         ref: 'Product_Author'
     },
     disabled: {
