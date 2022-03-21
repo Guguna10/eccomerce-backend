@@ -77,7 +77,6 @@ exports.createBrand = async(req, res, next) => {
 // @acces   Private/Operator/Admin
 exports.updateBrand = async(req, res, next) => {
     const brand = await Brand.findById(req.params.brand_id)
-
     if(!brand) {
         return next(
             new ErrorResponse(`brand not found with if of ${req.params.brand_id}`, 404)
@@ -132,7 +131,6 @@ exports.updateBrand = async(req, res, next) => {
 // @acces   Private/Admin/operator
 exports.deleteBrand = async (req, res, next) => {
     const brand = await Brand.findById(req.params.brand_id)
-
     if (!brand) {
         return next(
             new ErrorResponse(`cannot find brand with this ${req.params.brand_id} Id"`, 404)

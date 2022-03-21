@@ -28,6 +28,7 @@ application.use(express.urlencoded({ extended: true, limit: "50mb" }))
 // ===== Cookie Parser ===== //
 application.use(cookieParser())
 
+
 // ===== Morgan Logger Middleware ===== //
 if (process.env.NODE_ENV === "development") {
     application.use(morgan("dev"))
@@ -71,16 +72,16 @@ application.use(errorHanlder)
 const PORT = process.env.PORT || 5000
 
 application.listen(PORT, (request, response) => {
-    console.log(
-        chalk.bold.yellow(
-            `Server running in ${process.env.NODE_ENV} mode on ${PORT}`
-        )
+    console.log((
+        chalk.underline.bold.blue
+        `Server running in ${process.env.NODE_ENV} mode on ${PORT}`
+    )      
     )
 })
 
 // ===== Handle Unhandled Promise Rejections ===== //
 process.on("unhandledRejection", (error, promise) => {
-    console.log(chalk.red(`Error: ${error.message}`))
+    console.log(`Error: ${error.message}`)
     
     // ===== Close Server & Exit Process ===== //
     // server.close(() => process.exit(1))
