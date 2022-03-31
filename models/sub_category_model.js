@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 
-// ========== Sub Category Schema in Mongoose ========== //
-const SubCategoryModel= new mongoose.Schema({
+// ========== Sub Category Model in Mongoose ========== //
+const SubCategoryModel = new mongoose.Schema({
     name: {
         type: String,
         required: true,

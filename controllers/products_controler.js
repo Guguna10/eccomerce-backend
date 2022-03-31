@@ -1,5 +1,4 @@
 const Product = require('../models/product_model.js')
-const User = require('../models/user_model')
 const ErrorResponse = require('../utils/error_response')
 
 // @desc    Create Product
@@ -72,7 +71,7 @@ exports.updateProduct = async (req, res, next) => {
         .then((updated_product) => {
             res.status(200).json({ success: true, updated_product: updated_product})
         })
-        .catch((error) => {
+        .catch(() => {
             return next(
                 new ErrorResponse('an error occurred while updating product details', 400)
             )

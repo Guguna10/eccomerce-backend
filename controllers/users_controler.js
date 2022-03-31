@@ -4,7 +4,7 @@ const User = require("../models/user_model")
 // @desc    Create User
 // @route   post /api/v1/users/create_user
 // @access  private/ADMIN
-exports.createUser = async(req, res) => {
+exports.createUser = async(req, res, next) => {
     const { first_name, last_name, phone, email, password, role} = req.body
     
     const emailExists = await User.findOne({ email: email.toLowerCase() })

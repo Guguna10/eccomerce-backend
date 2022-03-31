@@ -243,7 +243,7 @@ exports.updateUserProfileImage = async (request, response, next) => {
     }
 
     if (user.photo) {
-        await cloudinary.uploader.destroy(`ecommerce-backend/profile-images/${user._id}`), function (error, result) {
+        await cloudinary.uploader.destroy(`ecommerce-backend/profile-images/${user._id}`), function (error) {
             if (error) {
                 return next(
                     new ErrorResponse(`The user profile image could not be deleted with public id of: ${user._id}`, 400)

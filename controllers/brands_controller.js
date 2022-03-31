@@ -14,7 +14,7 @@ exports.getBrands = async(req, res) => {
 // @desc    Get Brand by ID
 // @route   GET /api/v1/brands/:brand_id
 // @acces   Public
-exports.getBrand = async(req, res) => {
+exports.getBrand = async(req, res, next) => {
     const brand = await Brand.findById(req.params.brand_id)
 
     if(!brand) {
@@ -28,7 +28,7 @@ exports.getBrand = async(req, res) => {
 
 // @desc    Create Brands
 // @route   POST /api/v1/brands
-// @acces   Private/Operator/Admin
+// @acces   Private
 exports.createBrand = async(req, res, next) => {
     const brand = await Brand
         .create(req.body)
@@ -65,7 +65,7 @@ exports.createBrand = async(req, res, next) => {
         .then((created_brand) => {
             res.status(200).json({ success: true, created_brand: created_brand })
         })
-        .catch((error) => {
+        .catch(() =>{
             return next(
                 new ErrorResponse('an error occured while updating the brand', 400)
             )
@@ -77,21 +77,22 @@ exports.createBrand = async(req, res, next) => {
 // @acces   Private/Operator/Admin
 exports.updateBrand = async(req, res, next) => {
     const brand = await Brand.findById(req.params.brand_id)
-    if(!brand) {
+    
+     if(!brand) {
         return next(
             new ErrorResponse(`brand not found with if of ${req.params.brand_id}`, 404)
         )
     }
 
-    let brand_image = null
-
-    await cloudinary.uploader.destroy(`ecommerce-backend/brands/${brand._id}`), function (error, result) {
+    await cloudinary.uploader.destroy(`ecommerce-backend/brands/${brand._id}`), function (error) {
         if (error) {
             return next(
                 new ErrorResponse(`The brand photo image could not be deleted with id of: ${brand._id}`, 400)
             )
         }
     }
+
+    let new_brand_image = null
     await cloudinary.uploader.upload(req.body.image, {
         public_id: `${brand._id}`,
         upload_preset: "ecommerce-backend-brands",
@@ -137,10 +138,10 @@ exports.deleteBrand = async (req, res, next) => {
         )
     }
 
-    await cloudinary.uploader.destroy(`ecommerce-backend/brands/${brand._id}`), function (error, result) {
+    await cloudinary.uploader.destroy(`ecommerce-backend/brands/${brand._id}`), function (error) {
         if (error) {
             return next(
-                new ErrorResponse(`The user profile image could not be deleted with public id of: ${brand._id}`, 400)
+                new ErrorResponse(`The brand image could not be deleted with public id of: ${brand._id}`, 400)
             )
         }
     }

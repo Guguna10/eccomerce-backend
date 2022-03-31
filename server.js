@@ -58,12 +58,20 @@ const authentication_routes = require("./routers/authentication_routes")
 const users_routes = require("./routers/users_routes")
 const products_routes = require("./routers/products_routes")
 const brands_routes = require("./routers/brands_routes")
+const carousel_routes = require("./routers/main_carousel_routes")
+const banner_routes = require("./routers/banners_routes")
+const category_routes = require("./routers/category_routes")
+const sub_category_routes = require("./routers/sub_category_routes")
 
 // ===== Mount Routers =====//
 application.use("/api/v1/authentication", authentication_routes)
 application.use("/api/v1/users", users_routes)
 application.use("/api/v1/products", products_routes)
 application.use("/api/v1/brands", brands_routes)
+application.use("/api/v1/carousel", carousel_routes)
+application.use("/api/v1/banners", banner_routes)
+application.use("/api/v1/categories", category_routes)
+application.use("/api/v1/sub_categories", sub_category_routes)
 
 
 // ===== Application Error Hanlder ===== //
@@ -71,16 +79,15 @@ application.use(errorHanlder)
 
 const PORT = process.env.PORT || 5000
 
-application.listen(PORT, (request, response) => {
+application.listen(PORT, () => {
     console.log((
-        chalk.underline.bold.blue
-        `Server running in ${process.env.NODE_ENV} mode on ${PORT}`
+        chalk.underline.bold.blue`Server running in ${process.env.NODE_ENV} mode on ${PORT}`
     )      
     )
 })
 
 // ===== Handle Unhandled Promise Rejections ===== //
-process.on("unhandledRejection", (error, promise) => {
+process.on("unhandledRejection", (error) => {
     console.log(`Error: ${error.message}`)
     
     // ===== Close Server & Exit Process ===== //

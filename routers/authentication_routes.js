@@ -14,7 +14,7 @@ const {
     resetPassword,
     sendPhoneConfirmToken,
     confirmPhone
-} = require('../controllers/authentication')
+} = require('../controllers/authentication_controller')
 const { protect } = require("../middlewares/authentication")
 
 router.get("/me", protect ,getMe)
