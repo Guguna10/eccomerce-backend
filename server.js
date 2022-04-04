@@ -28,6 +28,7 @@ application.use(express.urlencoded({ extended: true, limit: "50mb" }))
 // ===== Cookie Parser ===== //
 application.use(cookieParser())
 
+
 // ===== Morgan Logger Middleware ===== //
 if (process.env.NODE_ENV === "development") {
     application.use(morgan("dev"))
@@ -54,28 +55,38 @@ application.use(express.static(path.join(__dirname, "public")))
 
 // ===== Route Files ===== //
 const authentication_routes = require("./routers/authentication_routes")
+const users_routes = require("./routers/users_routes")
+const products_routes = require("./routers/products_routes")
+const brands_routes = require("./routers/brands_routes")
+const carousels_routes = require("./routers/carousel_routes")
+const banner_routes = require("./routers/banners_routes")
+const menu_routes = require('./routers/menu_routes')
 
 // ===== Mount Routers =====//
 application.use("/api/v1/authentication", authentication_routes)
-
+application.use("/api/v1/users", users_routes)
+application.use("/api/v1/products", products_routes)
+application.use("/api/v1/brands", brands_routes)
+application.use('/api/v1/carousels', carousels_routes)
+application.use("/api/v1/banners", banner_routes)
+application.use('/api/v1/rest_menu', menu_routes)
 
 // ===== Application Error Hanlder ===== //
 application.use(errorHanlder)
 
 const PORT = process.env.PORT || 5000
 
-application.listen(PORT, (request, response) => {
-    console.log(
-        chalk.bold.yellow(
-            `Server running in ${process.env.NODE_ENV} mode on ${PORT}`
-        )
+application.listen(PORT, () => {
+    console.log((
+        chalk.underline.bold.blue`Server running in ${process.env.NODE_ENV} mode on ${PORT}`
+    )      
     )
 })
 
 // ===== Handle Unhandled Promise Rejections ===== //
-process.on("unhandledRejection", (error, promise) => {
-    console.log(chalk.red(`Error: ${error.message}`))
-
+process.on("unhandledRejection", (error) => {
+    console.log(`Error: ${error.message}`)
+    
     // ===== Close Server & Exit Process ===== //
-    server.close(() => process.exit(1))
+    // server.close(() => process.exit(1))
 })

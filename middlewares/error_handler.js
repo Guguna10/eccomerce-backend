@@ -1,8 +1,8 @@
-
 const ErrorResponse = require("../utils/error_response")
 
  // ===== Close Server & Exit Process ===== //
-const errorHandler = (err, request, response, next) => {
+const errorHandler = (err, req, res, next) => {
+    
     let error = { ...err }
 
     error.message = err.message
@@ -28,7 +28,7 @@ const errorHandler = (err, request, response, next) => {
         error = new ErrorResponse(message, 400)
     }
 
-    response.status(error.statusCode || 500).json({
+    res.status(error.statusCode || 500).json({
         success: false,
         error: error.message || 'Server Error'
     })
