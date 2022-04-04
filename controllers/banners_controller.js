@@ -43,8 +43,6 @@ exports.createBanner = async(req, res, next) => {
     await cloudinary.uploader.upload(banner.image, {
         public_id: `${banner._id}`,
         upload_preset: "ecommerce-backend-banners",
-        width: 400,
-        height: 400
     }, function(error, result){
         if(error) {
             return next(
@@ -97,9 +95,7 @@ exports.updateBanner = async(req, res, next) => {
 
    await cloudinary.uploader.upload(req.body.image, {
        public_id: `${banner._id}`,
-       upload_preset: "ecommerce-backend-banners",
-       width: 400,
-       height: 400
+       upload_preset: "ecommerce-backend-banners"
    }, function(error, result){
        if(error) {
            console.log(error)

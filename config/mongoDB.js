@@ -4,7 +4,7 @@ const chalk = require("chalk")
 const connectDB = async () => {
     const connect = await mongoose.connect(process.env.MONGO_URL, {
         useNewUrlParser: true,
-        useUnifiedTopology: true,
+        useUnifiedTopology: true
     }) 
     
     console.log((chalk.underline.bold.cyan`Mongo Connected: ${connect.connection.host}`))

@@ -58,21 +58,18 @@ const authentication_routes = require("./routers/authentication_routes")
 const users_routes = require("./routers/users_routes")
 const products_routes = require("./routers/products_routes")
 const brands_routes = require("./routers/brands_routes")
-const carousel_routes = require("./routers/main_carousel_routes")
+const carousels_routes = require("./routers/carousel_routes")
 const banner_routes = require("./routers/banners_routes")
-const category_routes = require("./routers/category_routes")
-const sub_category_routes = require("./routers/sub_category_routes")
+const menu_routes = require('./routers/menu_routes')
 
 // ===== Mount Routers =====//
 application.use("/api/v1/authentication", authentication_routes)
 application.use("/api/v1/users", users_routes)
 application.use("/api/v1/products", products_routes)
 application.use("/api/v1/brands", brands_routes)
-application.use("/api/v1/carousel", carousel_routes)
+application.use('/api/v1/carousels', carousels_routes)
 application.use("/api/v1/banners", banner_routes)
-application.use("/api/v1/categories", category_routes)
-application.use("/api/v1/sub_categories", sub_category_routes)
-
+application.use('/api/v1/rest_menu', menu_routes)
 
 // ===== Application Error Hanlder ===== //
 application.use(errorHanlder)
